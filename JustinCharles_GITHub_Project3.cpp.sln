@@ -1,45 +1,127 @@
-#include <iostream>   // For input/output operations
-#include <iomanip>   // For formatting output
-#include "InvestmentCalculator.h"   // Include the custom class header
+#include <iostream>
+#include <iomanip> // For setw and setfill
+using namespace std;
+
+// Clock class to manage time
+class Clock {
+private:
+	int hour;
+	int minute;
+	int second;
+
+public:
+	// Constructor
+	Clock(int h = 0, int m = 0, int s = 0) {
+		hour = h;
+		minute = m;
+		second = s;
+	}
+
+	// Add one hour 
+	void addHour() {
+		hour = (hour + 1) % 24; // Ensures hour stays within 0-23
+	}
+
+
+	// Add one minute 
+	void addMinute() {
+		minute++;
+		if (minute >= 60) {
+			minute = 0;
+			addHour(); // Increment hour if minutes overflow
+		}
+	}
+
+
+	// Add one second
+	void addSecond() {
+		second++;
+		if (second >= 60) {
+			second = 0;
+			addMinute(); // Increment minute if seconds overflow
+		}
+	}
+
+	// Displays time in 24-hour format
+	void display12HourClock() const {
+		cout << setfill('0') << setw(2) << hour << ":"
+			<< setw(2) << minute << ":"
+			<< setw(2) << second;
+	}
+
+	// Display time in 12-hour format with AM/PM
+	void display12HourClock() const {
+		int displayHour = hour % 12;
+		if (displayHour == 0) displayHour = 12
+			string period = (hour >= 12) ? "PM" : "AM";
+
+		cout << setfill('0') << setw(2) << displayHour << ":"
+			<< setw(2) << minute << ":"
+			<< setw(2) << second << " " << period;
+	}
+}; 
+
+	// Function to display both clocks side-by-side
+void displayClocks(const Clock& clock) {
+	cout << "************************** **************************" << endl;
+	cout << "*      12-Hour Clock      *   *      24-Hour Clock      *" << endl;
+	cout << "*      ";
+	clock.display12HourClock();
+	cout << "*      " << endl;
+	cout << "**************************   **************************" << endl;
+}
+
+
+	// Function to display the menu
+void displayMenu() {
+	cout << "\n**********  MENU **********" << endl;
+	cout << "1.   Add One Hour" << endl;
+	cout << "2.   Add One Minute" << endl;
+	cout << "3.   Add One Second" << endl;
+	cout << "4.   Exit Program" << endl;
+	cout << "Enter your choice: ";
+}
+
 
 int main() {
-	// Declare variables for user input
-	double initialInvestment;
-	double monthlyDeposit;
-	double annualInterest;
-	int numberOfYears;
+	// Initialize clock at 00:00:00
+	Clock clock(0, 0, 0);
+	int choice;
 
-	// Display program welcome message
-	std::cout << "====================" << std::endl;
-	std::cout << "========== Airgead Banking App ==========" << std::endl;
-	std::cout << "====================" << std::endl;
+	do {
+		displayClocks(clock);   // Show clocks
 
-	// Prompt the user to enter the initial investment amount
-	std::cout << "Enter Initial Investment Amount:  $";
-	std::cin >> initialInvestment;
+		displayMenu();   // Show menu
+		cin >> choice;
 
-	// Prompt the user to enter the monthly deposit amount
-	std::cout << "Enter Monthly Deposit:  $";
-	std::cin >> monthlyDeposit;
+		// Input validation
+		while (cin.fail() || choice < 1 || choice > 4) {
+			cin.clear(); // Clear input error
+			cin.ignore(1000, '\n'); // Ignore bad input
+			cout << "Invalid input. Please enter a number from 1 to 4:   ";
+			cin >> choice;
+		}
 
-	// Prompt the user to enter the annual interest rate
-	std::cout << "Enter Annual Interest Rate (in %): ";
-	std::cin >> numberOfYears;
 
-	// Create an object of the InvestmentCalculator class
-	InvestmentCalculator calculator(initialInvestment, monthlyDeposit, annualInterest, numberOfYears);
+		// Perform action based on user choice
+		switch (choice) {
+		case 1:
+			clock.addHour();
+			break;
+		case 2:
+			clock.addMinute();
+			break;
+		case 3:
+			clock.addSecond();
+			break;
+		case 4:
+			cout << "Exisiting program. Goodbye!" << endl;
+			break;
+		}
 
-	// Add spacing between inputs and results
-	std::cout << std::endl;
 
-	// Call the function to display results without monthly deposits
-	calculator.displayWithoutMonthlyDeposits();
+	} while (choice != 4);
 
-	// Add spacing
-	std::cout << std::endl;
-
-	// Call the function to display results with monthly deposits
-	calculator.displayWithMonthlyDeposits();
-
-	// End porgram
 	return 0;
+}
+
